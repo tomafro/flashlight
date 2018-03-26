@@ -1,0 +1,22 @@
+{
+  "[web] [6e023…] Started GET \"/195539477/my/unreads\" for 127.0.0.1 at 2018-03-21 19:06:21 +0000": {
+    "context": "web",
+    "request_id": "6e023…"
+  },
+  "[web] [6e024…] Completed 304 Not Modified in 87ms (ActiveRecord: 2.8ms)": {
+    "context": "web",
+    "request_id": "6e024…"
+  },
+  "[ActionCable] [eae26…] [Victor Cooper] AppearanceChannel#appear({\"appearing_on\"=>\"\"})": {
+    "context": "cable",
+    "request_id": "eae26…"
+  },
+  "[assets] [6626b…] Served asset /icons/trix/trix_quote.svg - 304 Not Modified (10ms)": {
+    "context": "assets",
+    "request_id": "6626b…"
+  },
+  "[ActiveJob] [ActionMailer::DeliveryJob] [f0f3ca5e-edcd-4021-aab4-f703835af178] Performed ActionMailer::DeliveryJob (Job ID: f0f3ca5e-edcd-4021-aab4-f703835af178) from SuckerPunch(mailers) in 1457.31ms": {
+    "context": "jobs",
+    "request_id": "f0f3ca5e-edcd-4021-aab4-f703835af178"
+  }
+}
