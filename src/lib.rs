@@ -35,16 +35,8 @@ pub struct Args {
 pub fn run<T: BufRead, U: Write>(args: Args, input: T, output: &mut U) {
     let matcher = Regex::new(&regex::escape(&args.flag_pattern)).unwrap();
     let mut buffer = Buffer::new(args.flag_buffer_size);
-
-    // let stdin = io::stdin();
-    // let input: Box<BufRead> = if let &Some(ref filename) = &args.arg_file {
-    //     Box::new(BufReader::new(File::open(filename).unwrap()))
-    // }
-    // else {
-    //     Box::new(stdin.lock())
-    // };
-
     let mut matched_requests = HashSet::new();
+
     for l in input.lines() {
         let line = Line::from(l.unwrap());
 
