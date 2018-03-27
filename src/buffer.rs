@@ -11,7 +11,11 @@ pub struct Buffer {
 impl Buffer {
     pub fn new(max_size: usize) -> Buffer {
         let buffer = VecDeque::with_capacity(max_size + 1);
-        Buffer { max_size, buffer, line_number: 0 }
+        Buffer {
+            max_size,
+            buffer,
+            line_number: 0,
+        }
     }
 
     pub fn append(&mut self, line: Line) {
@@ -24,7 +28,7 @@ impl Buffer {
     }
 
     pub fn lines(&self) -> &VecDeque<Line> {
-      &self.buffer
+        &self.buffer
     }
 }
 
@@ -48,4 +52,3 @@ mod test {
         assert_eq!(3, buffer.lines().len());
     }
 }
-

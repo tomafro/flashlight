@@ -1,22 +1,22 @@
 use regex::Regex;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Hash, Eq)]
 pub enum Context {
     Web,
     Job,
     Cable,
     Asset,
-    Unknown
+    Unknown,
 }
 
 impl<'a> From<&'a str> for Context {
     fn from(context: &'a str) -> Self {
         match context {
-          "ActiveJob"   => Context::Job,
-          "ActionCable" => Context::Cable,
-          "assets"      => Context::Asset,
-          "web"         => Context::Web,
-          _             => Context::Unknown
+            "ActiveJob" => Context::Job,
+            "ActionCable" => Context::Cable,
+            "assets" => Context::Asset,
+            "web" => Context::Web,
+            _ => Context::Unknown,
         }
     }
 }
@@ -24,18 +24,18 @@ impl<'a> From<&'a str> for Context {
 impl Context {
     fn string(&self) -> &'static str {
         match *self {
-            Context::Job   => "jobs",
+            Context::Job => "jobs",
             Context::Cable => "cable",
             Context::Asset => "assets",
-            Context::Web   => "web",
-            _              => "unknown"
+            Context::Web => "web",
+            _ => "unknown",
         }
     }
 }
 
 impl From<String> for Context {
     fn from(context: String) -> Self {
-      Context::from(context.as_str())
+        Context::from(context.as_str())
     }
 }
 
@@ -63,7 +63,8 @@ impl Line {
 impl From<String> for Line {
     fn from(content: String) -> Self {
         lazy_static! {
-            static ref SPLITTER: Regex = Regex::new(r"\[([^\]]+)\](?: \[[^\]]+\])? \[([a-z0-9]+…|[a-f0-9-]+)\]").unwrap();
+            static ref SPLITTER: Regex =
+                Regex::new(r"\[([^\]]+)\](?: \[[^\]]+\])? \[([a-z0-9]+…|[a-f0-9-]+)\]").unwrap();
         }
 
         let cloned = content.clone();
@@ -72,10 +73,17 @@ impl From<String> for Line {
             let context = Context::from(captures.get(1).unwrap().as_str());
             let request_id = captures.get(2).unwrap().as_str().to_string();
 
-            Line { content, request_id: Some(request_id), context }
-        }
-        else {
-            Line { content, request_id: None, context: Context::Unknown }
+            Line {
+                content,
+                request_id: Some(request_id),
+                context,
+            }
+        } else {
+            Line {
+                content,
+                request_id: None,
+                context: Context::Unknown,
+            }
         }
     }
 }

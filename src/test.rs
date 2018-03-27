@@ -6,11 +6,13 @@ use std::str;
 
 #[test]
 fn test_matching_simple_request() {
-    let log = indoc!(r#"
+    let log = indoc!(
+        r#"
         [web] [a123b…] Aardvaark
         [web] [a123b…] Buffalo
         [web] [a123b…] Chinchilla
-    "#);
+    "#
+    );
 
     assert_eq!(log, match_pattern("Aardvaark", log));
     assert_eq!(log, match_pattern("Buffalo", log));
@@ -21,26 +23,32 @@ fn test_matching_simple_request() {
 
 #[test]
 fn test_match_interleaved_requests() {
-    let mammals = indoc!(r#"
+    let mammals = indoc!(
+        r#"
         [web] [a123b…] Aardvaark
         [web] [a123b…] Buffalo
         [web] [a123b…] Chinchilla
-    "#);
+    "#
+    );
 
-    let fish = indoc!(r#"
+    let fish = indoc!(
+        r#"
         [web] [b123d…] Albacore
         [web] [b123d…] Beluga
         [web] [b123d…] Carp
-    "#);
+    "#
+    );
 
-    let log = indoc!(r#"
+    let log = indoc!(
+        r#"
         [web] [a123b…] Aardvaark
         [web] [b123d…] Albacore
         [web] [b123d…] Beluga
         [web] [a123b…] Buffalo
         [web] [b123d…] Carp
         [web] [a123b…] Chinchilla
-    "#);
+    "#
+    );
 
     assert_eq!(mammals, match_pattern("Aardvaark", log));
     assert_eq!(mammals, match_pattern("Buffalo", log));
@@ -51,10 +59,54 @@ fn test_match_interleaved_requests() {
     assert_eq!(fish, match_pattern("Carp", log));
 }
 
+#[test]
+fn test_match_context_requests() {
+    let web = indoc!(
+        r#"
+        [web] [a123b…] Aardvaark
+        [web] [a123b…] Buffalo
+        [web] [a123b…] Chinchilla
+    "#
+    );
+
+    let assets = indoc!(
+        r#"
+        [assets] [b123d…] Albacore
+        [assets] [b123d…] Beluga
+        [assets] [b123d…] Carp
+    "#
+    );
+
+    let log = indoc!(
+        r#"
+        [web] [a123b…] Aardvaark
+        [assets] [b123d…] Albacore
+        [assets] [b123d…] Beluga
+        [web] [a123b…] Buffalo
+        [assets] [b123d…] Carp
+        [web] [a123b…] Chinchilla
+    "#
+    );
+
+    assert_eq!(web, match_contexts(vec![Context::Web], log));
+    assert_eq!(assets, match_contexts(vec![Context::Asset], log));
+    assert_eq!(log, match_contexts(vec![], log));
+    assert_eq!(log, match_contexts(vec![Context::Web, Context::Asset], log));
+}
+
 fn match_pattern(pattern: &str, log: &str) -> String {
-    let args = Args{ flag_pattern: pattern.to_string(), flag_file: None, flag_buffer_size: 10_000, flag_web: true, flag_cable: true, flag_jobs: true, flag_assets: true};
+    let config = Config::default().matching(pattern);
+    run_flashlight(config, log)
+}
+
+fn match_contexts(contexts: Vec<Context>, log: &str) -> String {
+    let config = Config::default().match_contexts(contexts);
+    run_flashlight(config, log)
+}
+
+fn run_flashlight(config: Config, log: &str) -> String {
     let reader = BufReader::new(log.as_bytes());
     let mut output: Vec<u8> = Vec::new();
-    run(args, reader, &mut output);
+    run(config, reader, &mut output);
     str::from_utf8(&output).unwrap().to_string()
 }
