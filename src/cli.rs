@@ -5,7 +5,7 @@ const USAGE: &'static str = "
 Flashlight.
 
 Usage:
-  flashlight [--pattern=<pattern>] [--web] [--cable] [--assets] [--jobs] [--buffer-size=<size>] [--file=<file>]
+  flashlight [<pattern>] [--web] [--cable] [--assets] [--jobs] [--buffer-size=<size>] [--file=<file>]
   flashlight -h | --help
 
 Options:
@@ -17,7 +17,7 @@ Options:
 
 #[derive(Debug, Deserialize)]
 pub struct Args {
-    pub flag_pattern: String,
+    pub arg_pattern: String,
     pub flag_file: Option<String>,
     pub flag_buffer_size: usize,
     pub flag_web: bool,
@@ -81,7 +81,7 @@ impl<'a> From<&'a Args> for Config {
             contexts.insert(Context::Job);
         }
 
-        let matcher = Regex::new(&regex::escape(&args.flag_pattern)).unwrap();
+        let matcher = Regex::new(&regex::escape(&args.arg_pattern)).unwrap();
 
         Config {
             contexts,
