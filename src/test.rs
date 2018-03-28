@@ -3,6 +3,7 @@ extern crate test;
 use super::*;
 use std::io::{self, BufRead, BufReader, Write};
 use std::str;
+use self::test::Bencher;
 
 #[test]
 fn test_matching_simple_request() {
@@ -92,6 +93,16 @@ fn test_match_context_requests() {
     assert_eq!(assets, match_contexts(vec![Context::Asset], log));
     assert_eq!(log, match_contexts(vec![], log));
     assert_eq!(log, match_contexts(vec![Context::Web, Context::Asset], log));
+}
+
+#[bench]
+fn bench_parse_1000_lines_of_generated_log(b: &mut Bencher) {
+    let log = include_str!("test/1000-lines-of-log.log");
+
+    b.iter(|| {
+        let config = Config::default().matching("Buffalo");
+        run_flashlight(config, log)
+    });
 }
 
 fn match_pattern(pattern: &str, log: &str) -> String {
