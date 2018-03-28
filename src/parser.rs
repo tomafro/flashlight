@@ -64,26 +64,21 @@ impl From<String> for Line {
     fn from(content: String) -> Self {
         lazy_static! {
             static ref SPLITTER: Regex =
-                Regex::new(r"\[([^\]]+)\](?: \[[^\]]+\])? \[([a-z0-9]+…|[a-f0-9-]+)\]").unwrap();
+                Regex::new(r"^\[([^\]]+)\](?: \[[^\]]+\])? \[([a-z0-9]+…|[a-f0-9-]+)\]").unwrap();
         }
 
-        let cloned = content.clone();
-        if SPLITTER.is_match(&cloned) {
-            let captures = SPLITTER.captures(&cloned).unwrap();
-            let context = Context::from(captures.get(1).unwrap().as_str());
-            let request_id = captures.get(2).unwrap().as_str().to_string();
+        let mut context = Context::Unknown;
+        let mut request_id = None;
 
-            Line {
-                content,
-                request_id: Some(request_id),
-                context,
-            }
-        } else {
-            Line {
-                content,
-                request_id: None,
-                context: Context::Unknown,
-            }
+        if let Some(captures) = SPLITTER.captures(&content) {
+            context = Context::from(captures.get(1).unwrap().as_str());
+            request_id = Some(captures.get(2).unwrap().as_str().to_string());
+        }
+
+        Line {
+            content,
+            request_id,
+            context,
         }
     }
 }

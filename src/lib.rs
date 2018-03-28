@@ -30,8 +30,8 @@ pub fn run<T: BufRead, U: Write>(config: Config, input: T, output: &mut U) {
     let mut buffer = Buffer::new(config.buffer_size);
     let mut matched_requests = HashSet::new();
 
-    for l in input.lines() {
-        let line = Line::from(l.unwrap());
+    for input_line in input.lines() {
+        let line = Line::from(input_line.unwrap());
 
         if config.contexts.is_empty() || config.contexts.contains(line.context()) {
             if matched_requests.contains(line.request_id()) {
