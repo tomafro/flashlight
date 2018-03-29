@@ -16,6 +16,7 @@ Options:
   --jobs                    Show logging from ActiveJob
   --assets                  Show logging from assets
   --log                     Log file (defaults to ./log/development.log)
+  --tail                    Tail the log file
 ";
 
 #[derive(Debug, Deserialize)]
@@ -26,6 +27,7 @@ pub struct Args {
     pub flag_cable: bool,
     pub flag_jobs: bool,
     pub flag_assets: bool,
+    pub flag_tail: bool,
 }
 
 impl Args {
@@ -36,10 +38,12 @@ impl Args {
     }
 }
 
+#[derive(Debug)]
 pub struct Config {
     pub buffer_size: usize,
     pub contexts: HashSet<Context>,
     pub matcher: RegexSet,
+    pub tail: bool
 }
 
 impl Config {
@@ -48,6 +52,7 @@ impl Config {
             contexts: HashSet::new(),
             matcher: RegexSet::new(&[""]).unwrap(),
             buffer_size: 10_000,
+            tail: false
         }
     }
 
@@ -83,13 +88,19 @@ impl<'a> From<&'a Args> for Config {
             contexts.insert(Context::Job);
         }
 
-        let matcher = RegexSet::new(&args.arg_string).unwrap();
-        println!("{:?}", matcher);
+        let mut strings = &vec!["".to_string()];
+
+        if !args.arg_string.is_empty() {
+            strings = &args.arg_string;
+        }
+
+        let matcher = RegexSet::new(strings).unwrap();
 
         Config {
             contexts,
             matcher,
             buffer_size: 10_000,
+            tail: args.flag_tail
         }
     }
 }
