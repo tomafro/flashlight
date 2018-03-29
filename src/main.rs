@@ -1,9 +1,9 @@
 extern crate flashlight;
-extern crate regex;
 extern crate isatty;
+extern crate regex;
 
 use std::io;
-use isatty::{stdin_isatty, stdout_isatty, stderr_isatty};
+use isatty::stdin_isatty;
 
 fn main() {
     let args = flashlight::Args::build();
