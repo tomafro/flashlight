@@ -1,9 +1,9 @@
 extern crate test;
 
+use self::test::Bencher;
 use super::*;
 use std::io::{self, BufRead, BufReader, Write};
 use std::str;
-use self::test::Bencher;
 
 #[test]
 fn test_matching_simple_request() {

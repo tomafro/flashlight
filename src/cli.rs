@@ -1,5 +1,6 @@
-use docopt::Docopt;
 use super::*;
+use docopt::Docopt;
+use regex::RegexSet;
 
 const USAGE: &'static str = "
 Flashlight.
@@ -42,22 +43,22 @@ impl Args {
 pub struct Config {
     pub buffer_size: usize,
     pub contexts: HashSet<Context>,
-    pub matcher: RegexSet,
-    pub tail: bool
+    pub tail: bool,
+    pub matcher: Matcher,
 }
 
 impl Config {
     pub fn default() -> Self {
         Config {
             contexts: HashSet::new(),
-            matcher: RegexSet::new(&[""]).unwrap(),
             buffer_size: 10_000,
-            tail: false
+            tail: false,
+            matcher: Matcher::Everything,
         }
     }
 
     pub fn matching(mut self, string: &str) -> Self {
-        self.matcher = RegexSet::new(&[string]).unwrap();
+        self.matcher = Matcher::for_strings(&vec![string.to_string()]);
         self
     }
 
@@ -88,19 +89,17 @@ impl<'a> From<&'a Args> for Config {
             contexts.insert(Context::Job);
         }
 
-        let mut strings = &vec!["".to_string()];
+        let mut matcher = Matcher::Everything;
 
         if !args.arg_string.is_empty() {
-            strings = &args.arg_string;
+            matcher = Matcher::for_strings(&args.arg_string);
         }
-
-        let matcher = RegexSet::new(strings).unwrap();
 
         Config {
             contexts,
             matcher,
             buffer_size: 10_000,
-            tail: args.flag_tail
+            tail: args.flag_tail,
         }
     }
 }
