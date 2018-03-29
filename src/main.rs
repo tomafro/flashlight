@@ -1,18 +1,19 @@
 extern crate flashlight;
 extern crate regex;
+extern crate isatty;
 
-use std::io::{self, BufReader};
-use std::fs::File;
+use std::io;
+use isatty::{stdin_isatty, stdout_isatty, stderr_isatty};
 
 fn main() {
     let args = flashlight::Args::build();
     let config = flashlight::Config::from(&args);
 
     if let &Some(ref filename) = &args.flag_file.clone() {
-        let file = File::open(filename).expect("File not found");
-        flashlight::run(config, BufReader::new(file), &mut io::stdout());
+        flashlight::run_with_file(config, filename, &mut io::stdout());
+    } else if stdin_isatty() {
+        flashlight::run_with_file(config, "log/development.log", &mut io::stdout());
     } else {
-        let stdin = io::stdin();
-        flashlight::run(config, stdin.lock(), &mut io::stdout());
+        flashlight::run_with_stdin(config, &mut io::stdout());
     };
 }

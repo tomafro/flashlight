@@ -24,7 +24,19 @@ pub use parser::Context;
 
 use regex::Regex;
 use std::collections::HashSet;
-use std::io::{BufRead, Write};
+use std::io::{self, BufRead, BufReader, Write};
+use std::fs::File;
+
+
+pub fn run_with_stdin<U: Write>(config: Config, output: &mut U) {
+    let stdin = io::stdin();
+    run(config, stdin.lock(), output);
+}
+
+pub fn run_with_file<U: Write>(config: Config, filename: &str, output: &mut U) {
+    let file = File::open(filename).expect("File not found");
+    run(config, BufReader::new(file), output);
+}
 
 pub fn run<T: BufRead, U: Write>(config: Config, input: T, output: &mut U) {
     let mut buffer = Buffer::new(config.buffer_size);
