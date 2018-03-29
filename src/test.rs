@@ -105,8 +105,14 @@ fn test_match_without_request_id() {
     "#
     );
 
-    assert_eq!("[no-account] [rake] [none] Aardvaark\n",  match_pattern("Aardvaark", log));
-    assert_eq!("[no-account] [rake] [none] Chinchilla\n", match_pattern("Chinchilla", log));
+    assert_eq!(
+        "[no-account] [rake] [none] Aardvaark\n",
+        match_pattern("Aardvaark", log)
+    );
+    assert_eq!(
+        "[no-account] [rake] [none] Chinchilla\n",
+        match_pattern("Chinchilla", log)
+    );
 }
 
 #[bench]

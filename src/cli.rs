@@ -5,21 +5,23 @@ const USAGE: &'static str = "
 Flashlight.
 
 Usage:
-  flashlight [--web] [--cable] [--assets] [--jobs] [--buffer-size=<size>] [--file=<file>] [<pattern>...]
+  flashlight [options] [<string>...]
   flashlight -h | --help
 
 Options:
   -h --help                 Show this screen.
   --version                 Show version.
-  --web                     Show web context
-  --buffer-size=<size>      Buffer size [default: 10000].
+  --web                     Show logging from web requests
+  --cable                   Show logging from ActionCable
+  --jobs                    Show logging from ActiveJob
+  --assets                  Show logging from assets
+  --log                     Log file (defaults to ./log/development.log)
 ";
 
 #[derive(Debug, Deserialize)]
 pub struct Args {
-    pub arg_pattern: Vec<String>,
-    pub flag_file: Option<String>,
-    pub flag_buffer_size: usize,
+    pub arg_string: Vec<String>,
+    pub flag_log: Option<String>,
     pub flag_web: bool,
     pub flag_cable: bool,
     pub flag_jobs: bool,
@@ -81,13 +83,13 @@ impl<'a> From<&'a Args> for Config {
             contexts.insert(Context::Job);
         }
 
-        let matcher = RegexSet::new(&args.arg_pattern).unwrap();
+        let matcher = RegexSet::new(&args.arg_string).unwrap();
         println!("{:?}", matcher);
 
         Config {
             contexts,
             matcher,
-            buffer_size: args.flag_buffer_size,
+            buffer_size: 10_000,
         }
     }
 }

@@ -22,7 +22,7 @@ pub use parser::Line;
 pub use buffer::Buffer;
 pub use parser::Context;
 
-use regex::{Regex, RegexSet};
+use regex::RegexSet;
 use std::collections::HashSet;
 use std::io::{self, BufRead, BufReader, Write};
 use std::fs::File;
