@@ -95,6 +95,20 @@ fn test_match_context_requests() {
     assert_eq!(log, match_contexts(vec![Context::Web, Context::Asset], log));
 }
 
+#[test]
+fn test_match_without_request_id() {
+    let log = indoc!(
+        r#"
+        [no-account] [rake] [none] Aardvaark
+        [web] [a123b…] Buffalo
+        [no-account] [rake] [none] Chinchilla
+    "#
+    );
+
+    assert_eq!("[no-account] [rake] [none] Aardvaark\n",  match_pattern("Aardvaark", log));
+    assert_eq!("[no-account] [rake] [none] Chinchilla\n", match_pattern("Chinchilla", log));
+}
+
 #[bench]
 fn bench_parse_1000_lines_of_generated_log(b: &mut Bencher) {
     let log = include_str!("test/1000-lines-of-log.log");

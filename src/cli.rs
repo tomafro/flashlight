@@ -5,7 +5,7 @@ const USAGE: &'static str = "
 Flashlight.
 
 Usage:
-  flashlight [<pattern>] [--web] [--cable] [--assets] [--jobs] [--buffer-size=<size>] [--file=<file>]
+  flashlight [--web] [--cable] [--assets] [--jobs] [--buffer-size=<size>] [--file=<file>] [<pattern>...]
   flashlight -h | --help
 
 Options:
@@ -17,7 +17,7 @@ Options:
 
 #[derive(Debug, Deserialize)]
 pub struct Args {
-    pub arg_pattern: String,
+    pub arg_pattern: Vec<String>,
     pub flag_file: Option<String>,
     pub flag_buffer_size: usize,
     pub flag_web: bool,
@@ -37,20 +37,20 @@ impl Args {
 pub struct Config {
     pub buffer_size: usize,
     pub contexts: HashSet<Context>,
-    pub matcher: Regex,
+    pub matcher: RegexSet,
 }
 
 impl Config {
     pub fn default() -> Self {
         Config {
             contexts: HashSet::new(),
-            matcher: Regex::new(&"".to_string()).unwrap(),
+            matcher: RegexSet::new(&[""]).unwrap(),
             buffer_size: 10_000,
         }
     }
 
     pub fn matching(mut self, string: &str) -> Self {
-        self.matcher = Regex::new(string).unwrap();
+        self.matcher = RegexSet::new(&[string]).unwrap();
         self
     }
 
@@ -81,7 +81,8 @@ impl<'a> From<&'a Args> for Config {
             contexts.insert(Context::Job);
         }
 
-        let matcher = Regex::new(&regex::escape(&args.arg_pattern)).unwrap();
+        let matcher = RegexSet::new(&args.arg_pattern).unwrap();
+        println!("{:?}", matcher);
 
         Config {
             contexts,

@@ -22,7 +22,7 @@ pub use parser::Line;
 pub use buffer::Buffer;
 pub use parser::Context;
 
-use regex::Regex;
+use regex::{Regex, RegexSet};
 use std::collections::HashSet;
 use std::io::{self, BufRead, BufReader, Write};
 use std::fs::File;
@@ -49,15 +49,17 @@ pub fn run<T: BufRead, U: Write>(config: Config, input: T, output: &mut U) {
             if matched_requests.contains(line.request_id()) {
                 write!(output, "{}\n", line.content()).unwrap();
             } else if config.matcher.is_match(line.content()) {
-                for previous in buffer
-                    .lines()
-                    .into_iter()
-                    .filter(|l| l.request_id() == line.request_id())
-                {
-                    write!(output, "{}\n", previous.content()).unwrap();
+                if line.request_id().is_some() {
+                    for previous in buffer
+                        .lines()
+                        .into_iter()
+                        .filter(|l| l.request_id() == line.request_id())
+                    {
+                        write!(output, "{}\n", previous.content()).unwrap();
+                    }
+                    matched_requests.insert(line.request_id().clone());
                 }
                 write!(output, "{}\n", line.content()).unwrap();
-                matched_requests.insert(line.request_id().clone());
             }
             buffer.append(line);
         }
