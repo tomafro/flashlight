@@ -42,23 +42,23 @@ impl Args {
 #[derive(Debug)]
 pub struct Config {
     pub buffer_size: usize,
-    pub contexts: HashSet<Context>,
     pub tail: bool,
     pub matcher: Matcher,
+    pub filter: Matcher,
 }
 
 impl Config {
     pub fn default() -> Self {
         Config {
-            contexts: HashSet::new(),
+            filter: Matcher::Everything,
+            matcher: Matcher::Everything,
             buffer_size: 10_000,
             tail: false,
-            matcher: Matcher::Everything,
         }
     }
 
     pub fn matching(mut self, string: &str) -> Self {
-        self.matcher = Matcher::for_strings(&vec![string.to_string()]);
+        self.matcher = Matcher::match_strings(&vec![string.to_string()]);
         self
     }
 
@@ -67,7 +67,12 @@ impl Config {
         for c in contexts {
             new_contexts.insert(c);
         }
-        self.contexts = new_contexts;
+        if new_contexts.is_empty() {
+            self.filter = Matcher::Everything;
+        }
+        else {
+            self.filter = Matcher::ContextsMatcher(new_contexts);
+        }
         self
     }
 }
@@ -89,14 +94,20 @@ impl<'a> From<&'a Args> for Config {
             contexts.insert(Context::Job);
         }
 
+        let mut filter = Matcher::Everything;
+
+        if !contexts.is_empty() {
+            filter = Matcher::ContextsMatcher(contexts)
+        }
+
         let mut matcher = Matcher::Everything;
 
         if !args.arg_string.is_empty() {
-            matcher = Matcher::for_strings(&args.arg_string);
+            matcher = Matcher::match_strings(&args.arg_string);
         }
 
         Config {
-            contexts,
+            filter,
             matcher,
             buffer_size: 10_000,
             tail: args.flag_tail,

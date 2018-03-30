@@ -58,9 +58,8 @@ pub fn run<T: BufRead, U: Write>(config: Config, mut input: T, output: &mut U) {
 
     while let Ok(bytes) = input.read_line(&mut input_line) {
         if bytes > 0 {
-            let cloned = input_line.clone();
-            let line = Line::from(cloned);
-            if config.contexts.is_empty() || config.contexts.contains(line.context()) {
+            let line = Line::from(input_line.clone());
+            if config.filter.matches(&line) {
                 if matched_requests.contains(line.request_id()) {
                     write!(output, "{}", line.content()).unwrap();
                 } else if config.matcher.matches(&line) {
