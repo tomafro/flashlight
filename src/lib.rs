@@ -14,6 +14,7 @@ mod buffer;
 mod cli;
 mod matcher;
 mod parser;
+mod reader;
 #[cfg(test)]
 mod test;
 
@@ -23,6 +24,7 @@ pub use cli::Config;
 pub use matcher::Matcher;
 pub use parser::Context;
 pub use parser::Line;
+pub use reader::FileReader;
 
 use std::collections::HashSet;
 use std::fs;
@@ -37,16 +39,35 @@ pub fn run_with_stdin<U: Write>(config: Config, output: &mut U) {
 }
 
 pub fn run_with_file<U: Write>(config: Config, filename: &str, output: &mut U) {
-    let file = File::open(filename).expect("File not found");
+    let reader = FileReader::new(filename.to_string(), config.tail);
+    r2(config, reader, output);
+}
 
-    let mut reader = BufReader::new(file);
+pub fn r2<T, U: Write>(config: Config, input: T, output: &mut U)
+where T: Iterator<Item = Line>
+{
+    let mut buffer = Buffer::new(config.buffer_size);
+    let mut matched_requests = HashSet::new();
+    println!("{:?}", config);
 
-    let metadata = fs::metadata("/Users/tom/Work/basecamp/bc3/log/development.log").unwrap();
-    let offset = metadata.len() - 1000;
-    reader.seek(SeekFrom::Start(offset)).unwrap();
-    let mut _string = String::new();
-    reader.read_line(&mut _string).unwrap();
-    run(config, reader, output);
+    for line in input.filter(|l| config.filter.matches(&l)) {
+        if matched_requests.contains(line.request_id()) {
+            write!(output, "{}", line.content()).unwrap();
+        } else if config.matcher.matches(&line) {
+            if line.request_id().is_some() {
+                for previous in buffer
+                    .lines()
+                    .into_iter()
+                    .filter(|l| l.request_id() == line.request_id())
+                {
+                    write!(output, "{}", previous.content()).unwrap();
+                }
+                matched_requests.insert(line.request_id().clone());
+            }
+            write!(output, "{}", line.content()).unwrap();
+        }
+        buffer.append(line);
+    }
 }
 
 pub fn run<T: BufRead, U: Write>(config: Config, mut input: T, output: &mut U) {
