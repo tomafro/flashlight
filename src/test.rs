@@ -117,13 +117,23 @@ fn test_match_without_request_id() {
 
 #[bench]
 fn bench_parse_1000_lines_of_generated_log(b: &mut Bencher) {
-    let log = include_str!("test/1000-lines-of-log.log");
+    let log = include_str!("test/1000-lines.log");
 
     b.iter(|| {
         let config = Config::default().matching("Buffalo");
         run_flashlight(config, log)
     });
 }
+
+// #[bench]
+// fn bench_parse_100_000_lines_of_generated_log(b: &mut Bencher) {
+//     let log = include_str!("test/100_000-lines.log");
+
+//     b.iter(|| {
+//         let config = Config::default().matching("Buffalo");
+//         run_flashlight(config, log)
+//     });
+// }
 
 fn match_pattern(pattern: &str, log: &str) -> String {
     let config = Config::default().matching(pattern);
