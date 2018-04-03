@@ -4,16 +4,20 @@ extern crate regex;
 
 use isatty::stdin_isatty;
 use std::io;
+use flashlight::Runner;
+use flashlight::LineReader;
 
 fn main() {
     let args = flashlight::Args::build();
     let config = flashlight::Config::from(&args);
 
-    if let &Some(ref filename) = &args.flag_log.clone() {
-        flashlight::run_with_file(config, filename, &mut io::stdout());
+    let runner = if let &Some(ref filename) = &args.flag_log.clone() {
+        Runner { reader: LineReader::file(filename, config.tail)}
     } else if stdin_isatty() {
-        flashlight::run_with_file(config, "log/development.log", &mut io::stdout());
+        Runner { reader: LineReader::file("log/development.log", config.tail)}
     } else {
-        flashlight::run_with_stdin(config, &mut io::stdout());
+        Runner { reader: LineReader::stdin()}
     };
+
+    runner.run(config, &mut io::stdout());
 }

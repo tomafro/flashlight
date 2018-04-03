@@ -1,30 +1,21 @@
 use std::{thread, time};
 use std::fs::{self, File};
-use std::io::{self, BufRead};
-use std::io::BufReader;
-use std::io::{Seek,SeekFrom};
+use std::io::{self,BufRead,Read, BufReader,Seek,SeekFrom,Stdin};
 
-use super::Line;
-
-// pub struct LineReader<'a> {
-//     reader: &'a (BufRead + 'a), // with parens
-// }
-
-// impl<'a> LineReader<'a> {
-//     pub fn <T>from(input: T) -> LineReader
-//     where T: BufRead {
-//         LineReader { reader: &stdin.lock() }
-//     }
-// }
-
-pub struct FileReader {
-    tail: bool,
-    reader: BufReader<File>
+pub struct LineReader {
+    input: Box<BufRead>,
+    tail: bool
 }
 
-impl FileReader {
-    pub fn new(path: String, tail: bool) -> FileReader {
-        let file = File::open(&path).unwrap();
+impl LineReader {
+    pub fn stdin() -> LineReader {
+        let input = Box::new(BufReader::new(io::stdin()));
+        let tail = false;
+        LineReader { input, tail }
+    }
+
+    pub fn file(path: &str, tail: bool) -> LineReader {
+        let file = File::open(path).unwrap();
         let mut reader = BufReader::new(file);
 
         if tail {
@@ -35,24 +26,25 @@ impl FileReader {
             reader.read_line(&mut String::new()).unwrap();
         }
 
-        FileReader { reader, tail }
+        let input = Box::new(reader);
+        LineReader { input, tail }
     }
 }
 
-impl Iterator for FileReader {
-    type Item = Line;
+impl Iterator for LineReader {
+    type Item = String;
 
-    fn next(&mut self) -> Option<Line> {
+    fn next(&mut self) -> Option<String> {
         let pause = time::Duration::from_millis(100);
         let mut line = String::new();
 
         loop {
-            if let Ok(bytes) = self.reader.read_line(&mut line) {
+            if let Ok(bytes) = self.input.read_line(&mut line) {
                 if bytes > 0 {
-                    return Some(Line::from(line))
+                    return Some(line)
                 }
                 else {
-                    if (self.tail) {
+                    if self.tail {
                         thread::sleep(pause);
                     }
                     else {
@@ -66,4 +58,3 @@ impl Iterator for FileReader {
         }
     }
 }
-

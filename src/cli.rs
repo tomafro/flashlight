@@ -16,7 +16,7 @@ Options:
   --cable                   Show logging from ActionCable
   --jobs                    Show logging from ActiveJob
   --assets                  Show logging from assets
-  --log                     Log file (defaults to ./log/development.log)
+  --log <log>               Log file (defaults to ./log/development.log)
   --tail                    Tail the log file
 ";
 
