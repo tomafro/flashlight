@@ -135,19 +135,19 @@ fn bench_parse_1000_lines_of_generated_log(b: &mut Bencher) {
 //     });
 // }
 
-fn match_pattern(pattern: &str, log: &str) -> String {
+fn match_pattern(pattern: &str, log: &'static str) -> String {
     let config = Config::default().matching(pattern);
     run_flashlight(config, log)
 }
 
-fn match_contexts(contexts: Vec<Context>, log: &str) -> String {
+fn match_contexts(contexts: Vec<Context>, log: &'static str) -> String {
     let config = Config::default().match_contexts(contexts);
     run_flashlight(config, log)
 }
 
-fn run_flashlight(config: Config, log: &str) -> String {
-    let reader = BufReader::new(log.as_bytes());
+fn run_flashlight(config: Config, log: &'static str) -> String {
     let mut output: Vec<u8> = Vec::new();
-    run(config, reader, &mut output);
+    let runner = Runner { config, reader: LineReader::string(log) };
+    runner.run(&mut output);
     str::from_utf8(&output).unwrap().to_string()
 }

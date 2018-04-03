@@ -1,6 +1,7 @@
 use super::*;
 use docopt::Docopt;
 use regex::RegexSet;
+use std::collections::HashSet;
 
 const USAGE: &'static str = "
 Flashlight.

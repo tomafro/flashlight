@@ -3,8 +3,8 @@ use std::fs::{self, File};
 use std::io::{self,BufRead,Read, BufReader,Seek,SeekFrom,Stdin};
 
 pub struct LineReader {
-    input: Box<BufRead>,
-    tail: bool
+    pub input: Box<BufRead>,
+    pub tail: bool
 }
 
 impl LineReader {
@@ -27,6 +27,12 @@ impl LineReader {
         }
 
         let input = Box::new(reader);
+        LineReader { input, tail }
+    }
+
+    pub fn string(string: &'static str) -> LineReader {
+        let input = Box::new(BufReader::new(string.as_bytes()));
+        let tail = false;
         LineReader { input, tail }
     }
 }
