@@ -8,9 +8,8 @@ extern crate lazy_static;
 #[macro_use]
 extern crate indoc;
 extern crate docopt;
-extern crate regex;
 extern crate isatty;
-
+extern crate regex;
 
 mod buffer;
 mod cli;

@@ -1,7 +1,7 @@
 extern crate flashlight;
 
-use std::io;
 use flashlight::Runner;
+use std::io;
 
 fn main() {
     let runner = Runner::from_cli();

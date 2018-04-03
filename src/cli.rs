@@ -70,8 +70,7 @@ impl Config {
         }
         if new_contexts.is_empty() {
             self.filter = Matcher::Everything;
-        }
-        else {
+        } else {
             self.filter = Matcher::ContextsMatcher(new_contexts);
         }
         self

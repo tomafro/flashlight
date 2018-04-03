@@ -1,10 +1,10 @@
-use std::{thread, time};
 use std::fs::{self, File};
-use std::io::{self,BufRead,Read, BufReader,Seek,SeekFrom,Stdin};
+use std::io::{self, BufRead, BufReader, Read, Seek, SeekFrom, Stdin};
+use std::{thread, time};
 
 pub struct LineReader {
     pub input: Box<BufRead>,
-    pub tail: bool
+    pub tail: bool,
 }
 
 impl LineReader {
@@ -47,19 +47,16 @@ impl Iterator for LineReader {
         loop {
             if let Ok(bytes) = self.input.read_line(&mut line) {
                 if bytes > 0 {
-                    return Some(line)
-                }
-                else {
+                    return Some(line);
+                } else {
                     if self.tail {
                         thread::sleep(pause);
-                    }
-                    else {
-                        return None
+                    } else {
+                        return None;
                     }
                 }
-            }
-            else {
-                return None
+            } else {
+                return None;
             }
         }
     }
