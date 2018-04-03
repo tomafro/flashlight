@@ -147,7 +147,8 @@ fn match_contexts(contexts: Vec<Context>, log: &'static str) -> String {
 
 fn run_flashlight(config: Config, log: &'static str) -> String {
     let mut output: Vec<u8> = Vec::new();
-    let runner = Runner { config, reader: LineReader::string(log) };
+    let Config { matcher, filter, buffer_size, tail } = config;
+    let runner = Runner { matcher, filter, buffer_size, reader: LineReader::string(log) };
     runner.run(&mut output);
     str::from_utf8(&output).unwrap().to_string()
 }
