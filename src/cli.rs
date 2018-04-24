@@ -1,6 +1,7 @@
 use super::*;
 use docopt::Docopt;
 use regex::RegexSet;
+use std::collections::HashSet;
 
 const USAGE: &'static str = "
 Flashlight.
@@ -16,7 +17,7 @@ Options:
   --cable                   Show logging from ActionCable
   --jobs                    Show logging from ActiveJob
   --assets                  Show logging from assets
-  --log                     Log file (defaults to ./log/development.log)
+  --log <log>               Log file (defaults to ./log/development.log)
   --tail                    Tail the log file
 ";
 
@@ -69,8 +70,7 @@ impl Config {
         }
         if new_contexts.is_empty() {
             self.filter = Matcher::Everything;
-        }
-        else {
+        } else {
             self.filter = Matcher::ContextsMatcher(new_contexts);
         }
         self

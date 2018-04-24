@@ -1,5 +1,6 @@
 use super::*;
 use regex::RegexSet;
+use std::collections::HashSet;
 
 #[derive(Debug)]
 pub enum Matcher {
