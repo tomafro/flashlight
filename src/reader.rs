@@ -1,5 +1,5 @@
 use std::fs::{self, File};
-use std::io::{self, BufRead, BufReader, Read, Seek, SeekFrom, Stdin};
+use std::io::{self, BufRead, BufReader, Seek, SeekFrom};
 use std::{thread, time};
 
 pub struct LineReader {

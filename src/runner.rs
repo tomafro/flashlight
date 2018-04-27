@@ -1,9 +1,6 @@
 use isatty::stdin_isatty;
 use std::collections::HashSet;
-use std::fs;
-use std::fs::File;
-use std::io::{self, BufRead, BufReader, Seek, SeekFrom, Write};
-use std::{thread, time};
+use std::io::Write;
 
 use super::*;
 
