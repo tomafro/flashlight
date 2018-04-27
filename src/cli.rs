@@ -11,7 +11,6 @@ Usage:
 
 Options:
   -h --help                 Show this screen.
-  --version                 Show version.
   --web                     Show logging from web requests
   --cable                   Show logging from ActionCable
   --jobs                    Show logging from ActiveJob
