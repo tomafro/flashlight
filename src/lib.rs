@@ -1,4 +1,3 @@
-#![feature(non_modrs_mods)]
 #![feature(test)]
 #[macro_use]
 extern crate serde_derive;
