@@ -22,6 +22,7 @@ impl<'a> From<&'a str> for Context {
 }
 
 impl Context {
+    #[cfg(test)]
     fn string(&self) -> &'static str {
         match *self {
             Context::Job => "jobs",
