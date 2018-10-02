@@ -15,19 +15,23 @@ impl LineReader {
     }
 
     pub fn file(path: &str, tail: bool) -> LineReader {
-        let file = File::open(path).unwrap();
-        let mut reader = BufReader::new(file);
+        if let Ok(file) = File::open(path) {
+            let mut reader = BufReader::new(file);
 
-        if tail {
-            let metadata = fs::metadata(&path).unwrap();
-            let offset = metadata.len() - 1000;
+            if tail {
+                let metadata = fs::metadata(&path).unwrap();
+                let offset = metadata.len() - 1000;
 
-            reader.seek(SeekFrom::Start(offset)).unwrap();
-            reader.read_line(&mut String::new()).unwrap();
+                reader.seek(SeekFrom::Start(offset)).unwrap();
+                reader.read_line(&mut String::new()).unwrap();
+            }
+
+            let input = Box::new(reader);
+            return LineReader { input, tail }
+        } else {
+            eprintln!("The logfile '{}' couldn't be opened", path);
+            ::std::process::exit(1);
         }
-
-        let input = Box::new(reader);
-        LineReader { input, tail }
     }
 
     pub fn string(string: &'static str) -> LineReader {
