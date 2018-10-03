@@ -1,22 +1,8 @@
 use std::fs::{self, File};
 use std::io::{self, BufRead, BufReader, Seek, SeekFrom};
 use std::{thread, time};
-use std::fmt;
 
-pub struct FileNotFoundError {
-    path: String
-}
-
-impl FileNotFoundError {
-    fn new(path: &str) -> FileNotFoundError {
-        FileNotFoundError{path: path.to_string()}
-    }
-}
-impl fmt::Display for FileNotFoundError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Log file '{}' wasn't found", self.path)
-    }
-}
+use error::FileNotFoundError;
 
 pub struct LineReader {
     pub input: Box<BufRead>,

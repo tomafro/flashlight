@@ -12,6 +12,7 @@ extern crate regex;
 
 mod buffer;
 mod cli;
+mod error;
 mod matcher;
 mod parser;
 mod reader;
@@ -26,5 +27,5 @@ pub use matcher::Matcher;
 pub use parser::Context;
 pub use parser::Line;
 pub use reader::LineReader;
-pub use reader::FileNotFoundError;
+pub use error::FileNotFoundError;
 pub use runner::Runner;
