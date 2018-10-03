@@ -26,4 +26,5 @@ pub use matcher::Matcher;
 pub use parser::Context;
 pub use parser::Line;
 pub use reader::LineReader;
+pub use reader::FileNotFoundError;
 pub use runner::Runner;

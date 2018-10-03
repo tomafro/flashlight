@@ -21,7 +21,7 @@ impl Runner {
             buffer_size,
         } = Config::from(&args);
 
-        let reader = if let &Some(ref filename) = &args.flag_log.clone() {
+        let reader_result = if let &Some(ref filename) = &args.flag_log.clone() {
             LineReader::file(filename, tail)
         } else if stdin_isatty() {
             LineReader::file("log/development.log", tail)
@@ -29,11 +29,17 @@ impl Runner {
             LineReader::stdin()
         };
 
-        Runner {
-            filter,
-            matcher,
-            buffer_size,
-            reader,
+        match reader_result {
+            Ok(reader) => Runner {
+                filter,
+                matcher,
+                buffer_size,
+                reader,
+            },
+            Err(message) => {
+                eprintln!("{}", message);
+                ::std::process::exit(1);
+            }
         }
     }
 }
