@@ -2,7 +2,6 @@ extern crate test;
 
 use self::test::Bencher;
 use super::*;
-use std::io::{self, BufRead, BufReader, Write};
 use std::str;
 
 #[test]
@@ -151,7 +150,7 @@ fn run_flashlight(config: Config, log: &'static str) -> String {
         matcher,
         filter,
         buffer_size,
-        tail,
+        tail: _,
     } = config;
     let runner = Runner {
         matcher,
